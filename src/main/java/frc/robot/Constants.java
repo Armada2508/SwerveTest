@@ -1,7 +1,7 @@
 package frc.robot;
 
 public class Constants {
-    public class SwerveK {
+    public static class SwerveK {
     
     }
 }
