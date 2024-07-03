@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -13,6 +14,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveK;
@@ -40,10 +43,6 @@ public class Swerve extends SubsystemBase {
         swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
     }
 
-    /**   
-     * 
-     * @param 
-     */
     public void setupPathPlanner() {
         AutoBuilder.configureHolonomic(
             this::getPose, 
@@ -57,7 +56,6 @@ public class Swerve extends SubsystemBase {
                                             null), 
             null,
             this);
-            
     }
 
     /**
@@ -72,6 +70,21 @@ public class Swerve extends SubsystemBase {
                 new Translation2d(TranslationX * swerveDrive.getMaximumVelocity(), TranslationY * swerveDrive.getMaximumVelocity()), 
                 angularVelocity * swerveDrive.getMaximumAngularVelocity(), 
                 true, false));
+    }
+
+    public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
+        return runOnce(() -> {turn(targetAngle, currentAngle, fieldRelative);
+        });
+    }
+
+    public void turn(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
+        drive(getPose().getTranslation(), getTurningAngle(targetAngle, currentAngle).in(Degrees), fieldRelative, false);
+    }
+
+    public Measure<Angle> getTurningAngle(Measure<Angle> desiredAngle, Measure<Angle> currentHeading) {
+        double angle = (desiredAngle.minus(currentHeading).plus(Degrees.of(540))).in(Degrees);
+        angle = (angle % 360) - 180;
+        return Degrees.of(angle);
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
