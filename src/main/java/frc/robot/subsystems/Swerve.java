@@ -26,6 +26,9 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+/**
+ * ? Need to tune current limits, pidfproperties, controllerproperties, maybe find wheel grip coefficient of friction
+ */
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
