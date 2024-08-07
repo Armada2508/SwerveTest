@@ -1,7 +1,7 @@
 {
   "location": {
-    "front": 0,
-    "left": 0
+    "front": -12.75,
+    "left": 12.75
   },
   "absoluteEncoderOffset": 0,
   "drive": {
@@ -10,12 +10,12 @@
     "canbus": null
   },
   "angle": {
-    "type": "sparkflex",
+    "type": "talonsrx",
     "id": 0,
     "canbus": null
   },
   "encoder": {
-    "type": "none",
+    "type": "talonsrx_pwm",
     "id": 0,
     "canbus": null
   },

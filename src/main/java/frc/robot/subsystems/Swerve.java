@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class Swerve extends SubsystemBase {
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
-        swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveK.maxModuleSpeed.in(RadiansPerSecond), angleConversionFactor, driveConversionFactor);
+        swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveK.maxModuleSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
     }
 
     public void setupPathPlanner() {
@@ -52,7 +52,7 @@ public class Swerve extends SubsystemBase {
             this::setChassisSpeeds, 
             new HolonomicPathFollowerConfig(SwerveK.translationConstants, 
                                             SwerveK.rotationConstants, 
-                                            SwerveK.maxModuleSpeed.in(RadiansPerSecond), 
+                                            SwerveK.maxModuleSpeed.in(MetersPerSecond), 
                                             SwerveK.driveBaseRadius.in(Meters), 
                                             null), 
             () -> {
