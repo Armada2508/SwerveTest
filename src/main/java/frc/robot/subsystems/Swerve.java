@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +14,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveK;
@@ -27,8 +28,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class Swerve extends SubsystemBase {
 
-    SwerveDrive swerveDrive;
-    double maximumSpeed = Units.feetToMeters(4.5);
+    private final SwerveDrive swerveDrive;
+    // double maximumSpeed = Units.feetToMeters(4.5);
 
     /**
      * 
@@ -40,7 +41,7 @@ public class Swerve extends SubsystemBase {
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
-        swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+        swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveK.maxModuleSpeed.in(RadiansPerSecond), angleConversionFactor, driveConversionFactor);
     }
 
     public void setupPathPlanner() {
@@ -51,11 +52,16 @@ public class Swerve extends SubsystemBase {
             this::setChassisSpeeds, 
             new HolonomicPathFollowerConfig(SwerveK.translationConstants, 
                                             SwerveK.rotationConstants, 
-                                            SwerveK.maxModuleSpeed, 
+                                            SwerveK.maxModuleSpeed.in(RadiansPerSecond), 
                                             SwerveK.driveBaseRadius.in(Meters), 
                                             null), 
-            null,
-            this);
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                } return false;
+            }
+            ,this);
     }
 
     /**
@@ -73,8 +79,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
-        return runOnce(() -> {turn(targetAngle, currentAngle, fieldRelative);
-        });
+        return runOnce(() -> turn(targetAngle, currentAngle, fieldRelative));
     }
 
     public void turn(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
