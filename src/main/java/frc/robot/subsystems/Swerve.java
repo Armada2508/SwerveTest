@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -26,6 +25,9 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+/**
+ * ? Need to tune current limits, pidfproperties, controllerproperties, maybe find wheel grip coefficient of friction
+ */
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
@@ -35,13 +37,19 @@ public class Swerve extends SubsystemBase {
      * 
      * @param directory Directory of swerve drive config files.
      */
-    public Swerve(File directory) throws IOException {
+    public Swerve() {
         double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-
-        swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveK.maxModuleSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
+        SwerveParser parser = null;
+        try {
+            parser = new SwerveParser(SwerveK.swerveDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Swerve directory not found.");
+        }
+        swerveDrive = parser.createSwerveDrive(SwerveK.maxModuleSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
     }
 
     public void setupPathPlanner() {
