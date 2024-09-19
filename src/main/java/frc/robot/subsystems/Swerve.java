@@ -125,6 +125,14 @@ public class Swerve extends SubsystemBase {
         return getPose().getRotation();
     }
 
+    //! Fill out this info
+    /**
+     * 
+     * @param xInput
+     * @param yInput
+     * @param angle
+     * @return
+     */
     public ChassisSpeeds getTargetChassisSpeeds(double xInput, double yInput, Rotation2d angle) {
         Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
         return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(), angle.getRadians(), getPose().getRotation().getRadians(), SwerveK.maxModuleSpeed.in(MetersPerSecond));                                        
