@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -49,6 +50,16 @@ public class Robot extends TimedRobot {
     
     private void configureBindings() {
         
+    }
+
+    @Override
+    public void robotInit() {
+
+    }
+
+    @Override
+    public void robotPeriodic() {
+        System.out.println("Left X: " + xboxController.getLeftX() + " | Left Y" + xboxController.getLeftY());
     }
 
 }
