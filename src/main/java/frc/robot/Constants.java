@@ -36,4 +36,9 @@ public class Constants {
     public static class ControllerK {
         public static final int xboxPort = 0; //! Find
     }
+
+    public static class DriveK {
+        public static final double leftJoystickDeadband = 0; //! Find
+        public static final double rightJoystickDeadband = 0; //! Find
+    }
 }

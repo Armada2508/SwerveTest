@@ -18,7 +18,7 @@ public class AbsoluteDriveAdv {
     /**
      * @param swerve Swerve Subsystem
      * @param vXInput Double supplier X component of joystick input after deadband is applied, should be -1 to 1
-     * @param vYInputInput Double supplier Y component of joystick input after deadband is applied, should be -1 to 1
+     * @param vYInput Double supplier Y component of joystick input after deadband is applied, should be -1 to 1
      * @param headingAdjust Double supplier current robot heading to be adjusted after deadband is applied
      * @param lookAway Faces the robot towards the opposind alliance wall from the driver
      * @param lookTowards Faces the robot towards the driver
