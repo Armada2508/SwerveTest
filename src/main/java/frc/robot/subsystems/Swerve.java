@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Angle;
@@ -118,5 +119,14 @@ public class Swerve extends SubsystemBase {
 
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         swerveDrive.setChassisSpeeds(chassisSpeeds);
+    }
+
+    public Rotation2d getHeading() {
+        return getPose().getRotation();
+    }
+
+    public ChassisSpeeds getTargetChassisSpeeds(double xInput, double yInput, Rotation2d angle) {
+        Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
+        return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(), angle.getRadians(), getPose().getRotation().getRadians(), SwerveK.maxModuleSpeed.in(MetersPerSecond));                                        
     }
 }
