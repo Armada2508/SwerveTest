@@ -5,9 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerK;
 import frc.robot.Constants.DriveK;
@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
     final CommandXboxController xboxController = new CommandXboxController(ControllerK.xboxPort);
     
     public Robot() {
+        addPeriodic(() -> CommandScheduler.getInstance().run(), kDefaultPeriod);
         configureBindings();
 
          //Fill in parameter info
@@ -50,11 +51,6 @@ public class Robot extends TimedRobot {
     
     private void configureBindings() {
         
-    }
-
-    @Override
-    public void robotInit() {
-
     }
 
     @Override

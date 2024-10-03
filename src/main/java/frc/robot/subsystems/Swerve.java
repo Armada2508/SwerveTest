@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.IOException;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
@@ -51,6 +52,17 @@ public class Swerve extends SubsystemBase {
             throw new RuntimeException("Swerve directory not found.");
         }
         swerveDrive = parser.createSwerveDrive(SwerveK.maxModuleSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
+    }
+
+    @Override
+    public void periodic() {
+        for (var mod : swerveDrive.getModules()) {
+            var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
+            // motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition);
+            // motor.setSensorPhase(true);
+            motor.set(0.05);
+            System.out.println(motor.getDeviceID()+ ": "+ motor.getSensorCollection().getPulseWidthPosition() + " " + motor.getSelectedSensorPosition());
+        }
     }
 
     public void setupPathPlanner() {
