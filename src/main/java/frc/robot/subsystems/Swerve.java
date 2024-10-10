@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.IOException;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -34,7 +35,6 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
-    // double maximumSpeed = Units.feetToMeters(4.5);
 
     /**
      * 
@@ -91,11 +91,11 @@ public class Swerve extends SubsystemBase {
      * @param angularVelocity Angular Velocity to set 
      * @return
      */
-    public Command driveCommand(double TranslationX, double TranslationY, double angularVelocity) {
+    public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity) {
         return runOnce(() -> drive(
-                new Translation2d(TranslationX * swerveDrive.getMaximumVelocity(), TranslationY * swerveDrive.getMaximumVelocity()), 
-                angularVelocity * swerveDrive.getMaximumAngularVelocity(), 
-                true, false));
+                new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
+                angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
+                true, true));
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
