@@ -57,7 +57,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     @Override
     public double getAbsolutePosition() {
-        return talon.getSelectedSensorPosition() * degreesPerSensorUnit;
+        return talon.getSensorCollection().getPulseWidthRiseToFallUs() * (360.0 / 2047.0);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
     }
 
     @Override
-    public boolean setAbsoluteEncoderOffset(double offset) {
+    public boolean setAbsoluteEncoderOffset(double offset) { // !Offset needs to be fixed
         talon.setSelectedSensorPosition(talon.getSelectedSensorPosition() + offset / degreesPerSensorUnit);
         return true;
     }
