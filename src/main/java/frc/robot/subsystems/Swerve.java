@@ -95,7 +95,7 @@ public class Swerve extends SubsystemBase {
         return runOnce(() -> drive(
                 new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
                 angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
-                true, true));
+                true, false));
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {

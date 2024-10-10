@@ -66,7 +66,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
     }
 
     @Override
-    public boolean setAbsoluteEncoderOffset(double offset) { // !Offset needs to be fixed
+    public boolean setAbsoluteEncoderOffset(double offset) { //! Offset needs to be fixed
         talon.setSelectedSensorPosition(talon.getSelectedSensorPosition() + offset / degreesPerSensorUnit);
         return true;
     }
