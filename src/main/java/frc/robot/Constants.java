@@ -25,11 +25,20 @@ public class Constants {
         public static final double steerGearRatio = 12.8; //! Figure Out;
         public static final double driveGearRatio = 6; //! Figure Out
 
-        public static final Measure<Velocity<Distance>> maxModuleSpeed = MetersPerSecond.of(0); //! Tune
+        public static final Measure<Velocity<Distance>> maxModuleSpeed = MetersPerSecond.of(4); //! Tune
 
         public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! Tune
         public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! Tune
 
         public static final File swerveDirectory = new File(Filesystem.getDeployDirectory().getAbsolutePath() + "/swerve");
+    }
+
+    public static class ControllerK {
+        public static final int xboxPort = 0;
+    }
+
+    public static class DriveK {
+        public static final double leftJoystickDeadband = 0.05; //! Find
+        public static final double rightJoystickDeadband = 0.05; //! Find
     }
 }
