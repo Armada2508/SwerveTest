@@ -35,9 +35,9 @@ public class Robot extends TimedRobot {
 
        // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
-            () -> MathUtil.applyDeadband(xboxController.getLeftX(), DriveK.leftJoystickDeadband), 
-            () -> MathUtil.applyDeadband(xboxController.getLeftY(), DriveK.leftJoystickDeadband), 
-            () -> MathUtil.applyDeadband(xboxController.getRightX(), DriveK.rightJoystickDeadband)
+            () -> MathUtil.applyDeadband(-xboxController.getLeftY(), DriveK.leftJoystickDeadband), 
+            () -> MathUtil.applyDeadband(-xboxController.getLeftX(), DriveK.leftJoystickDeadband), 
+            () -> MathUtil.applyDeadband(-xboxController.getRightX(), DriveK.rightJoystickDeadband)
         );
 
         swerve.setDefaultCommand(driveFieldOrientedAngularVelocity);
