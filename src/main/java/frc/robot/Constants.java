@@ -27,8 +27,8 @@ public class Constants {
 
         public static final Measure<Velocity<Distance>> maxRobotSpeed = MetersPerSecond.of(4.24);
 
-        public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! Tune
-        public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! Tune
+        public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
+        public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
 
         public static final File swerveDirectory = new File(Filesystem.getDeployDirectory().getAbsolutePath() + "/swerve");
     }
@@ -38,7 +38,7 @@ public class Constants {
     }
 
     public static class DriveK {
-        public static final double leftJoystickDeadband = 0.05; //! Find
-        public static final double rightJoystickDeadband = 0.05; //! Find
+        public static final double leftJoystickDeadband = 0.05; //! TODO: Find
+        public static final double rightJoystickDeadband = 0.05; //! TODO: Find
     }
 }

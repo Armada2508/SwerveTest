@@ -21,8 +21,8 @@ public class Robot extends TimedRobot {
     public Robot() {
         addPeriodic(() -> CommandScheduler.getInstance().run(), kDefaultPeriod);
         configureBindings();
-        //! Buttons are for turning to directions, can cause conflict with definitions in configureBindings, change?
-        // AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv( //? Rename?
+        //! TODO: Buttons are for turning to directions, can cause conflict with definitions in configureBindings, change?
+        // AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv( //? TODO: Rename?
         //     swerve, 
         //     () -> MathUtil.applyDeadband(xboxController.getLeftX(), DriveK.leftJoystickDeadband), 
         //     () -> MathUtil.applyDeadband(xboxController.getLeftY(), DriveK.leftJoystickDeadband) ,
