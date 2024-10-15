@@ -6,11 +6,15 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.IOException;
+import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Angle;
@@ -26,12 +30,11 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
- * ? Need to tune current limits, pidfproperties, controllerproperties, maybe find wheel grip coefficient of friction
+ * ? TODO: Need to tune current limits, pidfproperties, controllerproperties, maybe find wheel grip coefficient of friction
  */
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
-    // double maximumSpeed = Units.feetToMeters(4.5);
 
     /**
      * 
@@ -49,7 +52,16 @@ public class Swerve extends SubsystemBase {
             e.printStackTrace();
             throw new RuntimeException("Swerve directory not found.");
         }
-        swerveDrive = parser.createSwerveDrive(SwerveK.maxModuleSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
+        swerveDrive = parser.createSwerveDrive(SwerveK.maxRobotSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
+        for (var mod : swerveDrive.getModules()) { //^ BANDAID SOLUTION FOR INVERT ISSUE
+            var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
+            motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition);
+        }
+    }
+
+    @Override
+    public void periodic() { // Calls constantly while robot is running
+        
     }
 
     public void setupPathPlanner() {
@@ -60,7 +72,7 @@ public class Swerve extends SubsystemBase {
             this::setChassisSpeeds, 
             new HolonomicPathFollowerConfig(SwerveK.translationConstants, 
                                             SwerveK.rotationConstants, 
-                                            SwerveK.maxModuleSpeed.in(MetersPerSecond), 
+                                            SwerveK.maxRobotSpeed.in(MetersPerSecond), 
                                             SwerveK.driveBaseRadius.in(Meters), 
                                             null), 
             () -> {
@@ -74,16 +86,16 @@ public class Swerve extends SubsystemBase {
 
     /**
      * 
-     * @param TranslationX Translation in the X direction
-     * @param TranslationY Translation in the Y direction
+     * @param TranslationX Translation in the X direction (Forwards, Backwards)
+     * @param TranslationY Translation in the Y direction (Left, Right)
      * @param angularVelocity Angular Velocity to set 
      * @return
      */
-    public Command driveCommand(double TranslationX, double TranslationY, double angularVelocity) {
+    public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity) {
         return runOnce(() -> drive(
-                new Translation2d(TranslationX * swerveDrive.getMaximumVelocity(), TranslationY * swerveDrive.getMaximumVelocity()), 
-                angularVelocity * swerveDrive.getMaximumAngularVelocity(), 
-                true, false));
+                new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
+                angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
+                true, true));
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
@@ -118,5 +130,22 @@ public class Swerve extends SubsystemBase {
 
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         swerveDrive.setChassisSpeeds(chassisSpeeds);
+    }
+
+    public Rotation2d getHeading() {
+        return getPose().getRotation();
+    }
+
+    //! TODO: Fill out this info
+    /**
+     * 
+     * @param xInput
+     * @param yInput
+     * @param angle
+     * @return
+     */
+    public ChassisSpeeds getTargetChassisSpeeds(double xInput, double yInput, Rotation2d angle) {
+        Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
+        return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(), angle.getRadians(), getPose().getRotation().getRadians(), SwerveK.maxRobotSpeed.in(MetersPerSecond));                                        
     }
 }
