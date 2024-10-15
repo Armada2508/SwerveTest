@@ -51,13 +51,13 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     @Override
     public void configure(boolean inverted) {
-        System.out.println("INVERTED MOTOR: " + inverted + " NUMERBER: " + talon.getDeviceID());
+        System.out.println("INVERTED MOTOR: " + inverted + " ID: " + talon.getDeviceID());
         talon.setSensorPhase(inverted);
     }
 
     @Override
     public double getAbsolutePosition() {
-        return talon.getSensorCollection().getPulseWidthRiseToFallUs() * (360.0 / 2047.0);
+        return (talon.getSelectedSensorPosition() * degreesPerSensorUnit) % 360;
     }
 
     @Override
