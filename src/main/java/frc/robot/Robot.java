@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -33,10 +35,11 @@ public class Robot extends TimedRobot {
         //     xboxController.getHID()::getBButton
         // );
 
+        var slider = Shuffleboard.getTab("testing").add("Speed", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
        // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
             () -> MathUtil.applyDeadband(-xboxController.getLeftY(), DriveK.leftJoystickDeadband), 
-            () -> MathUtil.applyDeadband(-xboxController.getLeftX(), DriveK.leftJoystickDeadband), 
+            () -> slider.getDouble(0), 
             () -> MathUtil.applyDeadband(-xboxController.getRightX(), DriveK.rightJoystickDeadband)
         );
 

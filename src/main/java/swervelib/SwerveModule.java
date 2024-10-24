@@ -2,6 +2,7 @@ package swervelib;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -386,6 +387,7 @@ public class SwerveModule
     if (absoluteEncoder != null && synchronizeEncoderQueued && synchronizeEncoderEnabled)
     {
       double absoluteEncoderPosition = getAbsolutePosition();
+      // System.out.println(absoluteEncoderPosition);
       if(Math.abs(angleMotor.getPosition() - absoluteEncoderPosition) >= synchronizeEncoderDeadband) {
         angleMotor.setPosition(absoluteEncoderPosition);
       }
@@ -393,6 +395,7 @@ public class SwerveModule
       synchronizeEncoderQueued = false;
     } else
     {
+      // System.out.println("set reference  + " + desiredState.angle.getDegrees());
       angleMotor.setReference(desiredState.angle.getDegrees(), 0);
     }
 

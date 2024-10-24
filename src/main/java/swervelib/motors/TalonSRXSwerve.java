@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
@@ -265,6 +266,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
     setpoint =
         isDriveMotor ? setpoint * .1 : SwerveMath.placeInAppropriate0To360Scope(position, setpoint);
+        System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);
     return setpoint / positionConversionFactor;
   }
 
@@ -292,7 +294,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
 
     burnFlash();
-
+    // System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint + " Position: " + position + " Native Setpoint: " + convertToNativeSensorUnits(setpoint, position));
     motor.set(
         isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
         convertToNativeSensorUnits(setpoint, position),
@@ -363,6 +365,7 @@ public class TalonSRXSwerve extends SwerveMotor
       {
         pos += 360;
       }
+      // System.out.println(pos + " " + pos % 360);
       return pos;
     }
   }

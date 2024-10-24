@@ -41,7 +41,7 @@ public class Swerve extends SubsystemBase {
      * @param directory Directory of swerve drive config files.
      */
     public Swerve() {
-        double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio);
+        double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio, 4096);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -95,7 +95,7 @@ public class Swerve extends SubsystemBase {
         return runOnce(() -> drive(
                 new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
                 angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
-                true, true));
+                false, true));
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
