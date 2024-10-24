@@ -22,14 +22,23 @@ public class Constants {
         public static final Measure<Distance> wheelDiameter = Inches.of(3); 
         public static final Measure<Distance> driveBaseRadius = Meters.of(0.4579874);
 
-        public static final double steerGearRatio = 12.8; //! Figure Out;
-        public static final double driveGearRatio = 6; //! Figure Out
+        public static final double steerGearRatio = 41.25;
+        public static final double driveGearRatio = 6;
 
-        public static final Measure<Velocity<Distance>> maxModuleSpeed = MetersPerSecond.of(0); //! Tune
+        public static final Measure<Velocity<Distance>> maxRobotSpeed = MetersPerSecond.of(4.24);
 
-        public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! Tune
-        public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! Tune
+        public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
+        public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
 
         public static final File swerveDirectory = new File(Filesystem.getDeployDirectory().getAbsolutePath() + "/swerve");
+    }
+
+    public static class ControllerK {
+        public static final int xboxPort = 0;
+    }
+
+    public static class DriveK {
+        public static final double leftJoystickDeadband = 0.05; //! TODO: Find
+        public static final double rightJoystickDeadband = 0.05; //! TODO: Find
     }
 }

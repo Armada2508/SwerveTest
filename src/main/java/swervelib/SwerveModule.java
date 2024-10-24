@@ -1,5 +1,9 @@
 package swervelib;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -41,7 +45,7 @@ public class SwerveModule
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public final  int                    moduleNumber;
+  public final int moduleNumber;
   /**
    * Swerve Motors.
    */
@@ -110,6 +114,14 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
+  /**
+   * Encoder, Absolute encoder synchronization enabled.
+   */
+  private boolean synchronizeEncoderEnabled = false;
+  /**
+   * Encoder synchronization deadband in degrees.
+   */
+  private double synchronizeEncoderDeadband = 3;
 
 
   /**
@@ -240,10 +252,30 @@ public class SwerveModule
    */
   public void queueSynchronizeEncoders()
   {
-    if (absoluteEncoder != null)
+    if (absoluteEncoder != null && synchronizeEncoderEnabled)
     {
       synchronizeEncoderQueued = true;
     }
+  }
+
+  /**
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * @param enabled Enable state
+   * @param deadband Deadband in degrees, default is 3 degrees.
+   */
+  public void setEncoderAutoSynchronize(boolean enabled, double deadband)
+  {
+    synchronizeEncoderEnabled = enabled;
+    synchronizeEncoderDeadband = deadband;
+  }
+
+  /**
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * @param enabled Enable state
+   */
+  public void setEncoderAutoSynchronize(boolean enabled)
+  {
+    synchronizeEncoderEnabled = enabled;
   }
 
   /**
@@ -353,14 +385,18 @@ public class SwerveModule
 
     // Prevent module rotation if angle is the same as the previous angle.
     // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
-    if (absoluteEncoder != null && synchronizeEncoderQueued)
+    if (absoluteEncoder != null && synchronizeEncoderQueued && synchronizeEncoderEnabled)
     {
       double absoluteEncoderPosition = getAbsolutePosition();
-      angleMotor.setPosition(absoluteEncoderPosition);
+      // System.out.println(absoluteEncoderPosition);
+      if(Math.abs(angleMotor.getPosition() - absoluteEncoderPosition) >= synchronizeEncoderDeadband) {
+        angleMotor.setPosition(absoluteEncoderPosition);
+      }
       angleMotor.setReference(desiredState.angle.getDegrees(), 0, absoluteEncoderPosition);
       synchronizeEncoderQueued = false;
     } else
     {
+      // if (((WPI_TalonSRX) angleMotor.getMotor()).getDeviceID() == 4) System.out.println("set reference  + " + desiredState.angle.getDegrees());
       angleMotor.setReference(desiredState.angle.getDegrees(), 0);
     }
 
@@ -591,13 +627,23 @@ public class SwerveModule
   {
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {
-      if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+      // If the absolute encoder is attached.
+      if (angleMotor.getMotor() instanceof CANSparkMax)
       {
-        angleOffset = 0;
-      } else
-      {
-        encoderOffsetWarning.set(true);
+        if (absoluteEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+        {
+          angleMotor.setAbsoluteEncoder(absoluteEncoder);
+          if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+          {
+            angleOffset = 0;
+          } else
+          {
+            angleMotor.setAbsoluteEncoder(null);
+            encoderOffsetWarning.set(true);
+          }
+        }
       }
+
     } else
     {
       noEncoderWarning.set(true);
@@ -609,6 +655,7 @@ public class SwerveModule
    */
   public void restoreInternalOffset()
   {
+    angleMotor.setAbsoluteEncoder(null);
     absoluteEncoder.setAbsoluteEncoderOffset(0);
     angleOffset = configuration.angleOffset;
   }
