@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
+import javax.management.RuntimeErrorException;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,6 +22,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveK;
@@ -43,6 +46,8 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio, 4096);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
+        System.out.println("Angle conversion factor: " + angleConversionFactor);
+        // if (1 == 1)throw new RuntimeException("");
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         SwerveParser parser = null;
@@ -56,12 +61,23 @@ public class Swerve extends SubsystemBase {
         for (var mod : swerveDrive.getModules()) { //^ BANDAID SOLUTION FOR INVERT ISSUE
             var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
             motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition);
+            // if (motor.getDeviceID() == 4) {
+            // }
         }
     }
 
     @Override
     public void periodic() { // Calls constantly while robot is running
-        
+        for (var mod : swerveDrive.getModules()) { //^ BANDAID SOLUTION FOR INVERT ISSUE
+            var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
+            if (motor.getDeviceID() == 4) {
+                                // motor.set(0.05);
+
+                // System.out.println(motor.getSelectedSensorPosition());
+                System.out.println("Motor:  " + motor.getDeviceID() + " |  Closed loop error: " + motor.getClosedLoopError() + " | Closed loop target: " + motor.getClosedLoopTarget() + " | Current Position: " + motor.getSelectedSensorPosition());
+                SmartDashboard.putNumber("Error", motor.getClosedLoopError());
+            }
+        }
     }
 
     public void setupPathPlanner() {

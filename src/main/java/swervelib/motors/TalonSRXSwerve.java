@@ -266,7 +266,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
     setpoint =
         isDriveMotor ? setpoint * .1 : SwerveMath.placeInAppropriate0To360Scope(position, setpoint);
-        System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);
+        // System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);
     return setpoint / positionConversionFactor;
   }
 
@@ -294,7 +294,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
 
     burnFlash();
-    // System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint + " Position: " + position + " Native Setpoint: " + convertToNativeSensorUnits(setpoint, position));
+    // if (motor.getDeviceID() == 4) System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint + " Position: " + position + " Native Setpoint: " + convertToNativeSensorUnits(setpoint, position));
     motor.set(
         isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
         convertToNativeSensorUnits(setpoint, position),

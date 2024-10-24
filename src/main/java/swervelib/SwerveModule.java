@@ -1,5 +1,6 @@
 package swervelib;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
 
@@ -395,7 +396,7 @@ public class SwerveModule
       synchronizeEncoderQueued = false;
     } else
     {
-      // System.out.println("set reference  + " + desiredState.angle.getDegrees());
+      // if (((WPI_TalonSRX) angleMotor.getMotor()).getDeviceID() == 4) System.out.println("set reference  + " + desiredState.angle.getDegrees());
       angleMotor.setReference(desiredState.angle.getDegrees(), 0);
     }
 
