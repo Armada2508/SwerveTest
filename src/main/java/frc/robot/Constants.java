@@ -22,7 +22,7 @@ public class Constants {
         public static final Measure<Distance> wheelDiameter = Inches.of(3); 
         public static final Measure<Distance> driveBaseRadius = Meters.of(0.4579874);
 
-        public static final double steerGearRatio = 41.25;
+        public static final double steerGearRatio = 1;
         public static final double driveGearRatio = 6;
 
         public static final Measure<Velocity<Distance>> maxRobotSpeed = MetersPerSecond.of(4.24);

@@ -68,14 +68,16 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() { // Calls constantly while robot is running
-        for (var mod : swerveDrive.getModules()) { //^ BANDAID SOLUTION FOR INVERT ISSUE
+        for (var mod : swerveDrive.getModules()) {
             var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
             if (motor.getDeviceID() == 4) {
                                 // motor.set(0.05);
 
                 // System.out.println(motor.getSelectedSensorPosition());
-                System.out.println("Motor:  " + motor.getDeviceID() + " |  Closed loop error: " + motor.getClosedLoopError() + " | Closed loop target: " + motor.getClosedLoopTarget() + " | Current Position: " + motor.getSelectedSensorPosition());
+                // System.out.println("Motor:  " + motor.getDeviceID() + " |  Closed loop error: " + motor.getClosedLoopError() + " | Closed loop target: " + motor.getClosedLoopTarget() + " | Current Position: " + motor.getSelectedSensorPosition());
                 SmartDashboard.putNumber("Error", motor.getClosedLoopError());
+                SmartDashboard.putNumber("Current", motor.getSelectedSensorPosition());
+                SmartDashboard.putNumber("Reference", motor.getClosedLoopTarget());
             }
         }
     }

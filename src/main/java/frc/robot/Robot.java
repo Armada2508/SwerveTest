@@ -35,11 +35,12 @@ public class Robot extends TimedRobot {
         //     xboxController.getHID()::getBButton
         // );
 
-        var slider = Shuffleboard.getTab("testing").add("Speed", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+        var slider = Shuffleboard.getTab("testing").add("Left/Right", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+        var sliderTwo = Shuffleboard.getTab("testing").add("Forward/Backward", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
        // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
             () -> MathUtil.applyDeadband(-xboxController.getLeftY(), DriveK.leftJoystickDeadband), 
-            () -> slider.getDouble(0), 
+            () -> MathUtil.applyDeadband(-xboxController.getLeftX(), DriveK.leftJoystickDeadband),  
             () -> MathUtil.applyDeadband(-xboxController.getRightX(), DriveK.rightJoystickDeadband)
         );
 
