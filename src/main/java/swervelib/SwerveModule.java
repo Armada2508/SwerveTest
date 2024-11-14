@@ -359,7 +359,12 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
+    // System.out.print("Pre Setpoint: " + desiredState.angle.getDegrees() + " | ");
+    SmartDashboard.putNumber("Pre Setpoint", desiredState.angle.getDegrees());
+    SmartDashboard.putNumber("Abs Position", getAbsolutePosition());
     desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
+    // System.out.println("Post setpoint: " + desiredState.angle.getDegrees());
+    SmartDashboard.putNumber("Post Setpoint", desiredState.angle.getDegrees());
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -534,7 +539,9 @@ public class SwerveModule
     {
       angle += 360;
     }
-
+    if (((WPI_TalonSRX)angleMotor.getMotor()).getDeviceID() == 4) {
+      SmartDashboard.putNumber("Raw absolute encoder", angle);
+    }
     return angle;
   }
 

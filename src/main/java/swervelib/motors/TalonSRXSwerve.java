@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
@@ -265,9 +266,18 @@ public class TalonSRXSwerve extends SwerveMotor
   public double convertToNativeSensorUnits(double setpoint, double position)
   {
     // if (motor.getDeviceID() == 4) {System.out.println("Position: " + position + "| Setpoint: " + setpoint);}
+    if (motor.getDeviceID() == 4) {
+ SmartDashboard.putNumber("Before 360", setpoint);
+    SmartDashboard.putNumber("Speed", motor.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Position convert", position);
+    }
     setpoint =
         isDriveMotor ? setpoint * .1 : SwerveMath.placeInAppropriate0To360Scope(position, setpoint);
-        if (motor.getDeviceID() == 4) {        System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);}
+        // if (motor.getDeviceID() == 4) {        System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);}
+        if (motor.getDeviceID() == 4) {
+    SmartDashboard.putNumber("After 360", setpoint);
+
+        }
     return setpoint / positionConversionFactor;
   }
 
