@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
-import javax.management.RuntimeErrorException;
-
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -46,7 +44,7 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio, 4096);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
-        System.out.println("Angle conversion factor: " + angleConversionFactor);
+        // System.out.println("Angle conversion factor: " + angleConversionFactor);
         // if (1 == 1)throw new RuntimeException("");
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -109,11 +107,11 @@ public class Swerve extends SubsystemBase {
      * @param angularVelocity Angular Velocity to set 
      * @return
      */
-    public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity) {
+    public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity, boolean fieldRelative) {
         return runOnce(() -> drive(
                 new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
                 angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
-                false, true));
+                fieldRelative, true));
     }
 
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {

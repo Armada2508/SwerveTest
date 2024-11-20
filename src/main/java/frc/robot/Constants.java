@@ -8,6 +8,7 @@ import java.io.File;
 
 import com.pathplanner.lib.util.PIDConstants;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
@@ -35,6 +36,9 @@ public class Constants {
 
     public static class ControllerK {
         public static final int xboxPort = 0;
+        public static final SlewRateLimiter translationalYLimiter = new SlewRateLimiter(0.5); // bigger number = faster rate of change
+        public static final SlewRateLimiter translationalXLimiter = new SlewRateLimiter(0.5); 
+        public static final SlewRateLimiter rotationalLimiter = new SlewRateLimiter(0.5);
     }
 
     public static class DriveK {

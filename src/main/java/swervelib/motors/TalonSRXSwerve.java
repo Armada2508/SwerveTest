@@ -267,9 +267,10 @@ public class TalonSRXSwerve extends SwerveMotor
   {
     // if (motor.getDeviceID() == 4) {System.out.println("Position: " + position + "| Setpoint: " + setpoint);}
     if (motor.getDeviceID() == 4) {
- SmartDashboard.putNumber("Before 360", setpoint);
+    SmartDashboard.putNumber("Before 360", setpoint);
     SmartDashboard.putNumber("Speed", motor.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Position convert", position);
+    SmartDashboard.putNumber("Actual position", motor.getSelectedSensorPosition() / 4096 * 360);
     }
     setpoint =
         isDriveMotor ? setpoint * .1 : SwerveMath.placeInAppropriate0To360Scope(position, setpoint);
@@ -371,12 +372,13 @@ public class TalonSRXSwerve extends SwerveMotor
     } else
     {
       var pos = motor.getSelectedSensorPosition() * positionConversionFactor;
-      pos %= 360;
-      if (pos < 360)
-      {
-        pos += 360;
-      }
+      // pos %= 360;
+      // if (pos < 0)
+      // {
+      //   pos += 360;
+      // }
       // System.out.println(pos + " " + pos % 360);
+      if (motor.getDeviceID() == 4) SmartDashboard.putNumber("angle position", pos);
       return pos;
     }
   }
