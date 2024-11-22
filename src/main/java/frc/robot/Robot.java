@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -21,6 +22,7 @@ public class Robot extends TimedRobot {
     private final CommandXboxController xboxController = new CommandXboxController(ControllerK.xboxPort);
     
     public Robot() {
+        DriverStation.silenceJoystickConnectionWarning(true);
         addPeriodic(() -> CommandScheduler.getInstance().run(), kDefaultPeriod);
         configureBindings();
         //! TODO: Buttons are for turning to directions, can cause conflict with definitions in configureBindings, change?
