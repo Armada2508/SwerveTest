@@ -52,9 +52,9 @@ public class DynamicSlewRateLimiter {
         } 
         prevVal +=
         MathUtil.clamp(
-        input - prevVal,
-        -negativeRateLimit * elapsedTime,
-        positiveRateLimit * elapsedTime);
+            input - prevVal,
+            -negativeRateLimit * elapsedTime,
+            positiveRateLimit * elapsedTime);
         prevTime = currentTime;
         return prevVal;
     }
