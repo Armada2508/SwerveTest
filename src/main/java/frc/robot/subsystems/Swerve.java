@@ -31,16 +31,12 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
- * ? TODO: Need to tune current limits, pidfproperties, controllerproperties, maybe find wheel grip coefficient of friction
+ * ? TODO: Need to tune current limits, controllerproperties, maybe find wheel grip coefficient of friction
  */
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
 
-    /**
-     * 
-     * @param directory Directory of swerve drive config files.
-     */
     public Swerve() {
         double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio, 4096);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
@@ -56,7 +52,7 @@ public class Swerve extends SubsystemBase {
             throw new RuntimeException("Swerve directory not found.");
         }
         swerveDrive = parser.createSwerveDrive(SwerveK.maxRobotSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
-        for (var mod : swerveDrive.getModules()) { //^ BANDAID SOLUTION FOR INVERT ISSUE
+        for (var mod : swerveDrive.getModules()) { //? BANDAID SOLUTION FOR INVERT ISSUE
             var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
             motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition);
             // if (motor.getDeviceID() == 4) {
@@ -105,6 +101,7 @@ public class Swerve extends SubsystemBase {
      * @param TranslationX Translation in the X direction (Forwards, Backwards)
      * @param TranslationY Translation in the Y direction (Left, Right)
      * @param angularVelocity Angular Velocity to set 
+     * @param fieldRelative Whether or not swerve is controlled using field relative speeds
      * @return
      */
     public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity, boolean fieldRelative) {

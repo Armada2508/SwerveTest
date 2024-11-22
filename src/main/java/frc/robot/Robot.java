@@ -39,9 +39,9 @@ public class Robot extends TimedRobot {
         var sliderTwo = Shuffleboard.getTab("testing").add("Forward/Backward", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
        // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
-            () -> ControllerK.translationalYLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftY(), DriveK.leftJoystickDeadband)), 
-            () -> ControllerK.translationalXLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftX(), DriveK.leftJoystickDeadband)),  
-            () -> ControllerK.rotationalLimiter.calculate(MathUtil.applyDeadband(-xboxController.getRightX(), DriveK.rightJoystickDeadband)),
+            () -> DriveK.translationalYLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftY(), ControllerK.leftJoystickDeadband)), 
+            () -> DriveK.translationalXLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftX(), ControllerK.leftJoystickDeadband)),  
+            () -> DriveK.rotationalLimiter.calculate(MathUtil.applyDeadband(-xboxController.getRightX(), ControllerK.rightJoystickDeadband)),
             false
         );
 
@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+
     }
 
 }
-
