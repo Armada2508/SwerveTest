@@ -26,6 +26,9 @@ public class DynamicSlewRateLimiter {
    *     second. This is expected to be positive. How quickly the input can decelerate.
    */
   public DynamicSlewRateLimiter(double increasingRateLimit, double decreasingRateLimit) {
+    if (increasingRateLimit < 0 || decreasingRateLimit < 0) {
+      throw new IllegalArgumentException("Rate limits can't be negative!");
+    }
     this.increasingRateLimit = increasingRateLimit;
     this.decreasingRateLimit = decreasingRateLimit;
     prevVal = 0;
