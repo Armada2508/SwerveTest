@@ -7,8 +7,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
@@ -35,7 +33,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * TalonSRX motor controller.
    */
-  WPI_TalonSRX motor;
+  private final WPI_TalonSRX motor;
   /**
    * The position conversion factor to convert raw sensor units to Meters Per 100ms, or Ticks to Degrees.
    */
@@ -265,19 +263,8 @@ public class TalonSRXSwerve extends SwerveMotor
    */
   public double convertToNativeSensorUnits(double setpoint, double position)
   {
-    // if (motor.getDeviceID() == 4) {System.out.println("Position: " + position + "| Setpoint: " + setpoint);}
-    if (motor.getDeviceID() == 4) {
-    // SmartDashboard.putNumber("Before 360", setpoint);
-    // SmartDashboard.putNumber("Speed", motor.getSelectedSensorVelocity());
-    // SmartDashboard.putNumber("Position convert", position);
-    // SmartDashboard.putNumber("Actual position", motor.getSelectedSensorPosition() / 4096 * 360);
-    }
     setpoint =
         isDriveMotor ? setpoint * .1 : SwerveMath.placeInAppropriate0To360Scope(position, setpoint);
-        // if (motor.getDeviceID() == 4) {        System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint);}
-        if (motor.getDeviceID() == 4) {
-          SmartDashboard.putNumber("position", position);
-        }
     return setpoint / positionConversionFactor;
   }
 
@@ -305,7 +292,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
 
     burnFlash();
-    // if (motor.getDeviceID() == 4) System.out.println(motor.getDeviceID() + ": Setpoint: " + setpoint + " Position: " + position + " Native Setpoint: " + convertToNativeSensorUnits(setpoint, position));
+
     motor.set(
         isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
         convertToNativeSensorUnits(setpoint, position),
@@ -371,13 +358,6 @@ public class TalonSRXSwerve extends SwerveMotor
     } else
     {
       var pos = motor.getSelectedSensorPosition() * positionConversionFactor;
-      // pos %= 360;
-      // if (pos < 0)
-      // {
-      //   pos += 360;
-      // }
-      // System.out.println(pos + " " + pos % 360);
-      if (motor.getDeviceID() == 4) SmartDashboard.putNumber("angle position", pos);
       return pos;
     }
   }

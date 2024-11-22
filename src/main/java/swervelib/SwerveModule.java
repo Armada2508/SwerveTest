@@ -1,9 +1,7 @@
 package swervelib;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -97,7 +95,7 @@ public class SwerveModule
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
-  private       boolean                antiJitterEnabled        = true;
+  private boolean antiJitterEnabled          = true;
   /**
    * Last swerve module state applied.
    */
@@ -113,15 +111,15 @@ public class SwerveModule
   /**
    * Encoder synchronization queued.
    */
-  private       boolean                synchronizeEncoderQueued = false;
+  private boolean synchronizeEncoderQueued   = false;
   /**
    * Encoder, Absolute encoder synchronization enabled.
    */
-  private boolean synchronizeEncoderEnabled = false;
+  private boolean synchronizeEncoderEnabled  = false;
   /**
    * Encoder synchronization deadband in degrees.
    */
-  private double synchronizeEncoderDeadband = 3;
+  private double  synchronizeEncoderDeadband = 3;
 
 
   /**
@@ -259,8 +257,10 @@ public class SwerveModule
   }
 
   /**
-   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
-   * @param enabled Enable state
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a
+   * few seconds.
+   *
+   * @param enabled  Enable state
    * @param deadband Deadband in degrees, default is 3 degrees.
    */
   public void setEncoderAutoSynchronize(boolean enabled, double deadband)
@@ -270,7 +270,9 @@ public class SwerveModule
   }
 
   /**
-   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a
+   * few seconds.
+   *
    * @param enabled Enable state
    */
   public void setEncoderAutoSynchronize(boolean enabled)
@@ -359,12 +361,7 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-    // System.out.print("Pre Setpoint: " + desiredState.angle.getDegrees() + " | ");
-    SmartDashboard.putNumber("Pre Setpoint", desiredState.angle.getDegrees());
-    SmartDashboard.putNumber("Abs Position", getAbsolutePosition());
     desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
-    // System.out.println("Post setpoint: " + desiredState.angle.getDegrees());
-    SmartDashboard.putNumber("Post Setpoint", desiredState.angle.getDegrees());
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -393,15 +390,14 @@ public class SwerveModule
     if (absoluteEncoder != null && synchronizeEncoderQueued && synchronizeEncoderEnabled)
     {
       double absoluteEncoderPosition = getAbsolutePosition();
-      // System.out.println(absoluteEncoderPosition);
-      if(Math.abs(angleMotor.getPosition() - absoluteEncoderPosition) >= synchronizeEncoderDeadband) {
+      if (Math.abs(angleMotor.getPosition() - absoluteEncoderPosition) >= synchronizeEncoderDeadband)
+      {
         angleMotor.setPosition(absoluteEncoderPosition);
       }
       angleMotor.setReference(desiredState.angle.getDegrees(), 0, absoluteEncoderPosition);
       synchronizeEncoderQueued = false;
     } else
     {
-      // if (((WPI_TalonSRX) angleMotor.getMotor()).getDeviceID() == 4) System.out.println("set reference  + " + desiredState.angle.getDegrees());
       angleMotor.setReference(desiredState.angle.getDegrees(), 0);
     }
 
@@ -539,9 +535,7 @@ public class SwerveModule
     {
       angle += 360;
     }
-    if (((WPI_TalonSRX)angleMotor.getMotor()).getDeviceID() == 4) {
-      SmartDashboard.putNumber("Raw absolute encoder", angle);
-    }
+
     return angle;
   }
 
