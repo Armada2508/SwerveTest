@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -52,12 +51,6 @@ public class Swerve extends SubsystemBase {
             throw new RuntimeException("Swerve directory not found.");
         }
         swerveDrive = parser.createSwerveDrive(SwerveK.maxRobotSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
-        for (var mod : swerveDrive.getModules()) { //? BANDAID SOLUTION FOR INVERT ISSUE
-            var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
-            motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition);
-            // if (motor.getDeviceID() == 4) {
-            // }
-        }
     }
 
     @Override

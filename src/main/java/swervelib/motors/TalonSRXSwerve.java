@@ -437,6 +437,17 @@ public class TalonSRXSwerve extends SwerveMotor
   }
 
   /**
+   * Set the selected feedback device for the TalonSRX.
+   * 
+   * @param feedbackDevice Feedback device to select.
+   */
+  public void setSelectedFeedbackDevice(FeedbackDevice feedbackDevice) 
+  {
+    configuration.primaryPID.selectedFeedbackSensor = feedbackDevice;
+    configChanged = true;
+  }
+
+  /**
    * Get the motor object from the module.
    *
    * @return Motor object.
