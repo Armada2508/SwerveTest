@@ -11,36 +11,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * edu.wpi.first.math.trajectory.TrapezoidProfile} instead.
  */
 public class DynamicSlewRateLimiter {
-  private final double m_positiveRateLimit;
-  private final double m_negativeRateLimit;
-  private double m_prevVal;
-  private double m_prevTime;
+  private final double increasingRateLimit;
+  private final double decreasingRateLimit;
+  private double prevVal;
+  private double prevTime;
 
   /**
-   * Creates a new SlewRateLimiter with the given positive and negative rate limits and initial
-   * value.
+   * Creates a new DynamicSlewRateLimiter with the given increasing and decreasing rate limits.
    *
-   * @param positiveRateLimit The rate-of-change limit in the positive direction, in units per
-   *     second. This is expected to be positive.
-   * @param negativeRateLimit The rate-of-change limit in the negative direction, in units per
-   *     second. This is expected to be negative.
-   * @param initialValue The initial value of the input.
+   * The rate limits are only magnitudes.
+   * @param increasingRateLimit The rate-of-change limit when the input is increasing, in units per
+   *     second. This is expected to be positive. How quickly the input can accelerate.
+   * @param decreasingRateLimit The rate-of-change limit when the input is decreasing, in units per
+   *     second. This is expected to be positive. How quickly the input can decelerate.
    */
-  public DynamicSlewRateLimiter(double positiveRateLimit, double negativeRateLimit, double initialValue) {
-    m_positiveRateLimit = positiveRateLimit;
-    m_negativeRateLimit = negativeRateLimit;
-    m_prevVal = initialValue;
-    m_prevTime = MathSharedStore.getTimestamp();
-  }
-
-  /**
-   * Creates a new SlewRateLimiter with the given positive rate limit and negative rate limit of
-   * -rateLimit.
-   *
-   * @param rateLimit The rate-of-change limit, in units per second.
-   */
-  public DynamicSlewRateLimiter(double positiveRateLimit, double negativeRateLimit) {
-    this(positiveRateLimit, negativeRateLimit, 0);
+  public DynamicSlewRateLimiter(double increasingRateLimit, double decreasingRateLimit) {
+    this.increasingRateLimit = increasingRateLimit;
+    this.decreasingRateLimit = decreasingRateLimit;
+    prevVal = 0;
+    prevTime = MathSharedStore.getTimestamp();
   }
 
   /**
@@ -50,35 +39,35 @@ public class DynamicSlewRateLimiter {
    * @return The filtered value, which will not change faster than the slew rate.
    */
   public double calculate(double input) {
-    double sign = Math.signum(input);
-    double pos = m_positiveRateLimit;
-    double neg = m_negativeRateLimit;
-    System.out.println(sign);
     double currentTime = MathSharedStore.getTimestamp();
-    double elapsedTime = currentTime - m_prevTime;
-    if (sign < 0) {
-        pos = -m_negativeRateLimit;
-        neg = -m_positiveRateLimit;
+    double elapsedTime = currentTime - prevTime;
+    double sign = Math.signum(prevVal);
+    double positiveRateLimit = increasingRateLimit;
+    double negativeRateLimit = decreasingRateLimit;
+    // Flip the positive and negative limits so that decreasing still means towards zero and increasing still means away.
+    if (sign < 0) { 
+        positiveRateLimit = decreasingRateLimit;
+        negativeRateLimit = increasingRateLimit;
     } 
-    SmartDashboard.putNumber("pos", pos);
-    SmartDashboard.putNumber("neg", neg);
-
-    m_prevVal +=
+    prevVal +=
         MathUtil.clamp(
-            input - m_prevVal,
-            neg * elapsedTime,
-            pos * elapsedTime);
-    m_prevTime = currentTime;
-    return m_prevVal;
+            input - prevVal,
+            -negativeRateLimit * elapsedTime,
+            positiveRateLimit * elapsedTime);
+    prevTime = currentTime;
+    SmartDashboard.putNumber("positiveRateLimit", positiveRateLimit);
+    SmartDashboard.putNumber("negativeRateLimit", negativeRateLimit);
+    SmartDashboard.putNumber("sign", sign);
+    return prevVal;
   }
 
   /**
-   * Returns the value last calculated by the SlewRateLimiter.
+   * Returns the value last calculated by the DynamicSlewRateLimiter.
    *
    * @return The last value.
    */
   public double lastValue() {
-    return m_prevVal;
+    return prevVal;
   }
 
   /**
@@ -87,7 +76,8 @@ public class DynamicSlewRateLimiter {
    * @param value The value to reset to.
    */
   public void reset(double value) {
-    m_prevVal = value;
-    m_prevTime = MathSharedStore.getTimestamp();
+    prevVal = value;
+    prevTime = MathSharedStore.getTimestamp();
   }
+
 }

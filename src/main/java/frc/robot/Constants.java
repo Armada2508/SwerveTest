@@ -35,13 +35,13 @@ public class Constants {
 
     public static class ControllerK {
         public static final int xboxPort = 0;
-        public static final DynamicSlewRateLimiter translationalYLimiter = new DynamicSlewRateLimiter(0.5, -2); // further from zero = faster rate of change
-        public static final DynamicSlewRateLimiter translationalXLimiter = new DynamicSlewRateLimiter(0.5, -2); // Current: 0.5
-        public static final DynamicSlewRateLimiter rotationalLimiter = new DynamicSlewRateLimiter(0.5, -2);
+        public static final DynamicSlewRateLimiter translationalYLimiter = new DynamicSlewRateLimiter(0.5, 2); // Larger number = faster rate of change
+        public static final DynamicSlewRateLimiter translationalXLimiter = new DynamicSlewRateLimiter(0.5, 2);
+        public static final DynamicSlewRateLimiter rotationalLimiter = new DynamicSlewRateLimiter(0.5, 2);
     }
 
     public static class DriveK {
-        public static final double leftJoystickDeadband = 0.05; //! TODO: Find
-        public static final double rightJoystickDeadband = 0.05; //! TODO: Find
+        public static final double leftJoystickDeadband = 0.05;
+        public static final double rightJoystickDeadband = 0.05;
     }
 }
