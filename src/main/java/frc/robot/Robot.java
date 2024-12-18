@@ -51,7 +51,8 @@ public class Robot extends TimedRobot {
     }
     
     private void configureBindings() {
-        
+        // Reset forward direction for field relative
+        xboxController.x().and(xboxController.b()).onTrue(swerve.runOnce(swerve::zeroGyro)); 
     }
 
     @Override

@@ -142,6 +142,14 @@ public class Swerve extends SubsystemBase {
         return getPose().getRotation();
     }
 
+    /**
+     * Resets the gyro and odometry to the current position but the current direction is now seen as 0.
+     * Useful for resetting the forward direction for field relative driving
+     */
+    public void zeroGyro() {
+        swerveDrive.zeroGyro();
+    }
+
     //! TODO: Fill out this info
     /**
      * 
