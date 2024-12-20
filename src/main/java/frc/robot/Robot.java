@@ -23,9 +23,6 @@ public class Robot extends TimedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
         addPeriodic(() -> CommandScheduler.getInstance().run(), kDefaultPeriod);
         configureBindings();
-        //! TODO: Buttons are for turning to directions, can cause conflict with definitions in configureBindings, change?
-
-       // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
             () -> DriveK.translationalYLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftY(), ControllerK.leftJoystickDeadband)), 
             () -> DriveK.translationalXLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftX(), ControllerK.leftJoystickDeadband)),  

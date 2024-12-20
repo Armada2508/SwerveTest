@@ -28,7 +28,7 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
- * ? TODO: Need to tune current limits, controllerproperties, maybe find wheel grip coefficient of friction
+ * ? TODO: Need to tune current limits, controllerproperties/heading correction
  */
 public class Swerve extends SubsystemBase {
 
@@ -47,6 +47,7 @@ public class Swerve extends SubsystemBase {
             throw new RuntimeException("Swerve directory not found.");
         }
         swerveDrive = parser.createSwerveDrive(SwerveK.maxRobotSpeed.in(MetersPerSecond), angleConversionFactor, driveConversionFactor);
+        setupPathPlanner();
     }
 
     @Override
@@ -54,6 +55,9 @@ public class Swerve extends SubsystemBase {
         // Do nothing
     }
 
+    /**
+     * Configures PathPlanner
+     */
     public void setupPathPlanner() {
         AutoBuilder.configureHolonomic(
             this::getPose, 
@@ -71,16 +75,16 @@ public class Swerve extends SubsystemBase {
                     return alliance.get() == DriverStation.Alliance.Red;
                 } return false;
             }
-            ,this);
+            , this);
     }
 
     /**
-     * 
-     * @param TranslationX Translation in the X direction (Forwards, Backwards)
-     * @param TranslationY Translation in the Y direction (Left, Right)
-     * @param angularVelocity Angular Velocity to set 
+     * Commands the robot to drive according to the given velocities
+     * @param TranslationX Translation in the X direction (Forwards, Backwards) between -1 and 1
+     * @param TranslationY Translation in the Y direction (Left, Right) between -1 and 1
+     * @param angularVelocity Angular Velocity to set between -1 and 1
      * @param fieldRelative Whether or not swerve is controlled using field relative speeds
-     * @return
+     * @return A command to drive the robot according to given velocities
      */
     public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity, boolean fieldRelative) {
         return runOnce(() -> drive(
@@ -90,21 +94,21 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * 
+     * Turns the robot to the desired angle
      * @param targetAngle Desired angle
      * @param currentAngle Current angle
-     * @param fieldRelative Wether or not swerve is controlled using field relative speeds
-     * @return
+     * @param fieldRelative Whether or not swerve is controlled using field relative speeds
+     * @return An instant command that turns the robot
      */
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
         return runOnce(() -> turn(targetAngle, currentAngle, fieldRelative));
     }
 
     /**
-     * 
+     * Turns the robot to the desired angle
      * @param targetAngle Desired angle
      * @param currentAngle Current angle
-     * @param fieldRelative Wether or not swerve is controlled using field relative speeds
+     * @param fieldRelative Whether or not swerve is controlled using field relative speeds
      */
     public void turn(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
         drive(getPose().getTranslation(), getTurningAngle(targetAngle, currentAngle).in(Degrees), fieldRelative, false);
@@ -112,10 +116,9 @@ public class Swerve extends SubsystemBase {
 
     /**
      * Gets the closest angle to turn to depending on the current heading of the robot
-     * 
      * @param desiredAngle Angle to turn to
      * @param currentHeading Current heading
-     * @return
+     * @return Angle to turn to
      */
     public Measure<Angle> getTurningAngle(Measure<Angle> desiredAngle, Measure<Angle> currentHeading) {
         double angle = (desiredAngle.minus(currentHeading).plus(Degrees.of(540))).in(Degrees);
@@ -124,11 +127,11 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * 
+     * Commands the drivebase to move according to the given linear and rotational velocities
      * @param translation Linear velocity of the robot in meters per second
      * @param rotation Rotation rate of the robot in Radians per second
-     * @param fieldRelative Wether the robot is field relative (true) or robot relative (false)
-     * @param isOpenLoop Wether it uses a closed loop velocity control or an open loop
+     * @param fieldRelative Whether the robot is field relative (true) or robot relative (false)
+     * @param isOpenLoop Whether it uses a closed loop velocity control or an open loop
      */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
@@ -143,7 +146,7 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * 
+     * Returns the robot's pose
      * @return Current pose of the robot as a Pose2d
      */
     public Pose2d getPose() {
@@ -151,8 +154,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * 
-     * @return Current speed of the robot
+     * Returns the robot's velocity (x, y, and omega)
+     * @return Current velocity of the robot
      */
     public ChassisSpeeds getRobotVelocity() {
         return swerveDrive.getRobotVelocity();
@@ -160,14 +163,14 @@ public class Swerve extends SubsystemBase {
 
     /**
      * Set the speed of the robot with closed loop velocity control
-     * @param chassisSpeeds
+     * @param chassisSpeeds to set speed with
      */
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         swerveDrive.setChassisSpeeds(chassisSpeeds);
     }
 
     /**
-     * 
+     * Returns the robot's heading as a Rotation2d
      * @return Rotational component of the robots pose
      */
     public Rotation2d getHeading() {
@@ -181,4 +184,5 @@ public class Swerve extends SubsystemBase {
     public void zeroGyro() {
         swerveDrive.zeroGyro();
     }
+
 }
