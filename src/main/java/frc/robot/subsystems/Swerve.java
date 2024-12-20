@@ -15,7 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -96,7 +96,7 @@ public class Swerve extends SubsystemBase {
      * @param fieldRelative Wether or not swerve is controlled using field relative speeds
      * @return
      */
-    public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
+    public Command turnCommand(Angle targetAngle, Angle currentAngle, boolean fieldRelative) {
         return runOnce(() -> turn(targetAngle, currentAngle, fieldRelative));
     }
 
@@ -106,7 +106,7 @@ public class Swerve extends SubsystemBase {
      * @param currentAngle Current angle
      * @param fieldRelative Wether or not swerve is controlled using field relative speeds
      */
-    public void turn(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
+    public void turn(Angle targetAngle, Angle currentAngle, boolean fieldRelative) {
         drive(getPose().getTranslation(), getTurningAngle(targetAngle, currentAngle).in(Degrees), fieldRelative, false);
     }
 
@@ -117,7 +117,7 @@ public class Swerve extends SubsystemBase {
      * @param currentHeading Current heading
      * @return
      */
-    public Measure<Angle> getTurningAngle(Measure<Angle> desiredAngle, Measure<Angle> currentHeading) {
+    public Angle getTurningAngle(Angle desiredAngle, Angle currentHeading) {
         double angle = (desiredAngle.minus(currentHeading).plus(Degrees.of(540))).in(Degrees);
         angle = (angle % 360) - 180;
         return Degrees.of(angle);
