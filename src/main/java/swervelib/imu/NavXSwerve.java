@@ -1,14 +1,16 @@
 package swervelib.imu;
 
-import com.kauailabs.navx.frc.AHRS;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import java.util.Optional;
-import swervelib.telemetry.Alert;
 
 /**
  * Communicates with the NavX({@link AHRS}) as the IMU.
@@ -17,30 +19,34 @@ public class NavXSwerve extends SwerveIMU
 {
 
   /**
+   * Mutable {@link AngularVelocity} for readings.
+   */
+  private final MutAngularVelocity yawVel      = new MutAngularVelocity(0, 0, DegreesPerSecond);
+  /**
    * NavX IMU.
    */
-  private AHRS       imu;
+  private       AHRS               imu;
   /**
    * Offset for the NavX.
    */
-  private Rotation3d offset      = new Rotation3d();
+  private       Rotation3d         offset      = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private boolean    invertedIMU = false;
+  private       boolean            invertedIMU = false;
   /**
    * An {@link Alert} for if there is an error instantiating the NavX.
    */
-  private Alert      navXError;
+  private       Alert              navXError;
 
   /**
    * Constructor for the NavX({@link AHRS}) swerve.
    *
    * @param port Serial Port to connect to.
    */
-  public NavXSwerve(SerialPort.Port port)
+  public NavXSwerve(NavXComType port)
   {
-    navXError = new Alert("IMU", "Error instantiating NavX.", Alert.AlertType.ERROR_TRACE);
+    navXError = new Alert("IMU", "Error instantiating NavX.", AlertType.kError);
     try
     {
       /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
@@ -48,7 +54,6 @@ public class NavXSwerve extends SwerveIMU
       /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
       imu = new AHRS(port);
       factoryDefault();
-      SmartDashboard.putData(imu);
     } catch (RuntimeException ex)
     {
       navXError.setText("Error instantiating NavX: " + ex.getMessage());
@@ -56,49 +61,6 @@ public class NavXSwerve extends SwerveIMU
     }
   }
 
-  /**
-   * Constructor for the NavX({@link AHRS}) swerve.
-   *
-   * @param port SPI Port to connect to.
-   */
-  public NavXSwerve(SPI.Port port)
-  {
-    try
-    {
-      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-      imu = new AHRS(port);
-      factoryDefault();
-      SmartDashboard.putData(imu);
-    } catch (RuntimeException ex)
-    {
-      navXError.setText("Error instantiating NavX: " + ex.getMessage());
-      navXError.set(true);
-    }
-  }
-
-  /**
-   * Constructor for the NavX({@link AHRS}) swerve.
-   *
-   * @param port I2C Port to connect to.
-   */
-  public NavXSwerve(I2C.Port port)
-  {
-    try
-    {
-      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-      imu = new AHRS(port);
-      factoryDefault();
-      SmartDashboard.putData(imu);
-    } catch (RuntimeException ex)
-    {
-      navXError.setText("Error instantiating NavX: " + ex.getMessage());
-      navXError.set(true);
-    }
-  }
 
   /**
    * Reset offset to current gyro reading. Does not call NavX({@link AHRS#reset()}) because it has been reported to be
@@ -137,6 +99,7 @@ public class NavXSwerve extends SwerveIMU
   public void setInverted(boolean invertIMU)
   {
     invertedIMU = invertIMU;
+    setOffset(getRawRotation3d());
   }
 
   /**
@@ -178,14 +141,10 @@ public class NavXSwerve extends SwerveIMU
             .times(9.81));
   }
 
-  /**
-   * Fetch the rotation rate from the IMU in degrees per second. If rotation rate isn't supported returns empty.
-   *
-   * @return {@link Double} of the rotation rate as an {@link Optional}.
-   */
-  public double getRate()
+  @Override
+  public MutAngularVelocity getYawAngularVelocity()
   {
-    return imu.getRate();
+    return yawVel.mut_setMagnitude(imu.getRate());
   }
 
   /**
