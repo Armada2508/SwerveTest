@@ -8,21 +8,21 @@ import java.io.File;
 
 import com.pathplanner.lib.util.PIDConstants;
 
-import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class Constants {
 
     public static class SwerveK {
-        public static final Measure<Distance> wheelDiameter = Inches.of(3); 
-        public static final Measure<Distance> driveBaseRadius = Meters.of(0.4579874);
+        public static final Distance wheelDiameter = Inches.of(3); 
+        public static final Distance driveBaseRadius = Meters.of(0.4579874);
 
         public static final double steerGearRatio = 1;
         public static final double driveGearRatio = 6;
 
-        public static final Measure<Velocity<Distance>> maxRobotSpeed = MetersPerSecond.of(4.24);
+        public static final LinearVelocity maxRobotSpeed = MetersPerSecond.of(4.24);
 
         public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
         public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
