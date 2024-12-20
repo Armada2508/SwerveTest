@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 
@@ -19,7 +18,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveK;
@@ -39,8 +37,6 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(SwerveK.steerGearRatio, 4096);
         double driveConversionFactor = SwerveMath.calculateMetersPerRotation(SwerveK.driveGearRatio, SwerveK.wheelDiameter.in(Inches));
-        // System.out.println("Angle conversion factor: " + angleConversionFactor);
-        // if (1 == 1)throw new RuntimeException("");
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         SwerveParser parser = null;
@@ -54,19 +50,8 @@ public class Swerve extends SubsystemBase {
     }
 
     @Override
-    public void periodic() { // Calls constantly while robot is running
-        for (var mod : swerveDrive.getModules()) {
-            var motor = (WPI_TalonSRX) mod.getAngleMotor().getMotor();
-            if (motor.getDeviceID() == 4) {
-                                // motor.set(0.05);
-
-                // System.out.println(motor.getSelectedSensorPosition());
-                // System.out.println("Motor:  " + motor.getDeviceID() + " |  Closed loop error: " + motor.getClosedLoopError() + " | Closed loop target: " + motor.getClosedLoopTarget() + " | Current Position: " + motor.getSelectedSensorPosition());
-                SmartDashboard.putNumber("Error", motor.getClosedLoopError());
-                SmartDashboard.putNumber("Current", motor.getSelectedSensorPosition());
-                SmartDashboard.putNumber("Reference", motor.getClosedLoopTarget());
-            }
-        }
+    public void periodic() {
+        // Do nothing
     }
 
     public void setupPathPlanner() {
@@ -104,40 +89,87 @@ public class Swerve extends SubsystemBase {
                 fieldRelative, true));
     }
 
+    /**
+     * 
+     * @param targetAngle Desired angle
+     * @param currentAngle Current angle
+     * @param fieldRelative Wether or not swerve is controlled using field relative speeds
+     * @return
+     */
     public Command turnCommand(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
         return runOnce(() -> turn(targetAngle, currentAngle, fieldRelative));
     }
 
+    /**
+     * 
+     * @param targetAngle Desired angle
+     * @param currentAngle Current angle
+     * @param fieldRelative Wether or not swerve is controlled using field relative speeds
+     */
     public void turn(Measure<Angle> targetAngle, Measure<Angle> currentAngle, boolean fieldRelative) {
         drive(getPose().getTranslation(), getTurningAngle(targetAngle, currentAngle).in(Degrees), fieldRelative, false);
     }
 
+    /**
+     * Gets the closest angle to turn to depending on the current heading of the robot
+     * 
+     * @param desiredAngle Angle to turn to
+     * @param currentHeading Current heading
+     * @return
+     */
     public Measure<Angle> getTurningAngle(Measure<Angle> desiredAngle, Measure<Angle> currentHeading) {
         double angle = (desiredAngle.minus(currentHeading).plus(Degrees.of(540))).in(Degrees);
         angle = (angle % 360) - 180;
         return Degrees.of(angle);
     }
 
+    /**
+     * 
+     * @param translation Linear velocity of the robot in meters per second
+     * @param rotation Rotation rate of the robot in Radians per second
+     * @param fieldRelative Wether the robot is field relative (true) or robot relative (false)
+     * @param isOpenLoop Wether it uses a closed loop velocity control or an open loop
+     */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
     }
 
+    /**
+     * Resets the odometry to the given pose
+     * @param initialHolonomicPose Pose to reset the odemetry to
+     */
     public void resetOdometry(Pose2d initialHolonomicPose) {
         swerveDrive.resetOdometry(initialHolonomicPose);
     }
 
+    /**
+     * 
+     * @return Current pose of the robot as a Pose2d
+     */
     public Pose2d getPose() {
         return swerveDrive.getPose();
     }
 
+    /**
+     * 
+     * @return Current speed of the robot
+     */
     public ChassisSpeeds getRobotVelocity() {
         return swerveDrive.getRobotVelocity();
     }
 
+    /**
+     * Set the speed of the robot with closed loop velocity control
+     * @param chassisSpeeds
+     */
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         swerveDrive.setChassisSpeeds(chassisSpeeds);
     }
 
+    /**
+     * 
+     * @return Rotational component of the robots pose
+     */
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
@@ -148,18 +180,5 @@ public class Swerve extends SubsystemBase {
      */
     public void zeroGyro() {
         swerveDrive.zeroGyro();
-    }
-
-    //! TODO: Fill out this info
-    /**
-     * 
-     * @param xInput
-     * @param yInput
-     * @param angle
-     * @return
-     */
-    public ChassisSpeeds getTargetChassisSpeeds(double xInput, double yInput, Rotation2d angle) {
-        Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
-        return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(), angle.getRadians(), getPose().getRotation().getRadians(), SwerveK.maxRobotSpeed.in(MetersPerSecond));                                        
     }
 }

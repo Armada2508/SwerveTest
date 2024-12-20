@@ -7,8 +7,6 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,19 +24,7 @@ public class Robot extends TimedRobot {
         addPeriodic(() -> CommandScheduler.getInstance().run(), kDefaultPeriod);
         configureBindings();
         //! TODO: Buttons are for turning to directions, can cause conflict with definitions in configureBindings, change?
-        // AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv( //? TODO: Rename?
-        //     swerve, 
-        //     () -> MathUtil.applyDeadband(xboxController.getLeftX(), DriveK.leftJoystickDeadband), 
-        //     () -> MathUtil.applyDeadband(xboxController.getLeftY(), DriveK.leftJoystickDeadband) ,
-        //     () -> MathUtil.applyDeadband(xboxController.getRightX(), DriveK.rightJoystickDeadband), 
-        //     xboxController.getHID()::getAButton, 
-        //     xboxController.getHID()::getXButton, 
-        //     xboxController.getHID()::getYButton, 
-        //     xboxController.getHID()::getBButton
-        // );
 
-        var slider = Shuffleboard.getTab("testing").add("Left/Right", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
-        var sliderTwo = Shuffleboard.getTab("testing").add("Forward/Backward", 0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
        // Fill in parameter info
         Command driveFieldOrientedAngularVelocity = swerve.driveCommand(
             () -> DriveK.translationalYLimiter.calculate(MathUtil.applyDeadband(-xboxController.getLeftY(), ControllerK.leftJoystickDeadband)), 
