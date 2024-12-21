@@ -2,21 +2,19 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -59,21 +57,19 @@ public class Swerve extends SubsystemBase {
      * Configures PathPlanner
      */
     public void setupPathPlanner() {
-        AutoBuilder.configureHolonomic(
+        AutoBuilder.configure(
             this::getPose, 
             this::resetOdometry, 
             this::getRobotVelocity, 
-            this::setChassisSpeeds, 
-            new HolonomicPathFollowerConfig(SwerveK.translationConstants, 
-                                            SwerveK.rotationConstants, 
-                                            SwerveK.maxRobotSpeed.in(MetersPerSecond), 
-                                            SwerveK.driveBaseRadius.in(Meters), 
-                                            null), 
+            (speeds, feedforward) -> setChassisSpeeds(speeds), 
+            new PPHolonomicDriveController(SwerveK.translationConstants, SwerveK.rotationConstants),
+            SwerveK.robotConfig,
             () -> {
                 var alliance = DriverStation.getAlliance();
                 if (alliance.isPresent()) {
                     return alliance.get() == DriverStation.Alliance.Red;
-                } return false;
+                } 
+                return false;
             }
             , this);
     }
@@ -88,8 +84,8 @@ public class Swerve extends SubsystemBase {
      */
     public Command driveCommand(DoubleSupplier TranslationX, DoubleSupplier TranslationY, DoubleSupplier angularVelocity, boolean fieldRelative) {
         return runOnce(() -> drive(
-                new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 
-                angularVelocity.getAsDouble() * swerveDrive.getMaximumAngularVelocity(), 
+                new Translation2d(TranslationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(), TranslationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 
+                angularVelocity.getAsDouble() * swerveDrive.getMaximumChassisAngularVelocity(), 
                 fieldRelative, true));
     }
 
