@@ -23,7 +23,7 @@ public class Constants {
         public static final Distance driveBaseRadius = Meters.of(0.4579874);
 
         public static final double steerGearRatio = 1;
-        public static final double driveGearRatio = 6;
+        public static final double driveGearRatio = 4.4;
 
         public static final LinearVelocity maxRobotSpeed = MetersPerSecond.of(4.24);
 
