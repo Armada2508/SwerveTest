@@ -1,19 +1,17 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Pounds;
 
 import java.io.File;
+import java.io.IOException;
 
-import com.pathplanner.lib.config.ModuleConfig;
+import org.json.simple.parser.ParseException;
+
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -31,8 +29,13 @@ public class Constants {
 
         public static final PIDConstants translationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
         public static final PIDConstants rotationConstants = new PIDConstants(1, 1, 1); //! TODO: Tune
-        public static final ModuleConfig moduleConfig = new ModuleConfig(wheelDiameter.div(2), maxRobotSpeed, 1, null, Amps.of(40), 1); //! TODO: Tune
-        public static final RobotConfig robotConfig = new RobotConfig(Pounds.of(0), KilogramSquareMeters.of(0), moduleConfig, new Translation2d[4]); //! TODO: Tune
+        public static RobotConfig robotConfig; static {
+            try {
+                robotConfig = RobotConfig.fromGUISettings();
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
         public static final File swerveDirectory = new File(Filesystem.getDeployDirectory().getAbsolutePath() + "/swerve");
     }
