@@ -25,9 +25,6 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-/**
- * ? TODO: Need to tune current limits, controllerproperties/heading correction
- */
 public class Swerve extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
